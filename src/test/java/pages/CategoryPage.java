@@ -6,14 +6,19 @@ import org.openqa.selenium.WebElement;
 
 public class CategoryPage extends BasePage {
 
-    private final By firstProductContainer = By.cssSelector(".product:first-of-type");
-    private final By firstProductPrice = By.cssSelector(".product:first-of-type .price");
-    private final By firstProductAddButton = By.cssSelector(".product:first-of-type .btn-add");
-    private final By quantityInput = By.id("quantity");
-    private final By popup = By.id("cart-popup");
-    private final By popupMessage = By.cssSelector("#cart-popup .message");
-    private final By popupTotal = By.cssSelector("#cart-popup .total");
-    private final By popupCheckoutButton = By.cssSelector("#cart-popup .btn-checkout");
+    // Listado de productos en categoria
+    private final By firstProductPrice = By.cssSelector(".product-miniature .price");
+    private final By firstProductLink = By.cssSelector(".product-miniature a.product-thumbnail, .product-miniature h2 a");
+
+    // Ficha de producto
+    private final By quantityInput = By.id("quantity_wanted");
+    private final By addToCartButton = By.cssSelector("button[data-button-action='add-to-cart']");
+
+    // Popup de carrito
+    private final By popup = By.id("blockcart-modal");
+    private final By popupMessage = By.cssSelector("#blockcart-modal .modal-body h4");
+    private final By popupTotal = By.cssSelector("#blockcart-modal .cart-content .value, #blockcart-modal .cart-content span.value");
+    private final By popupCheckoutButton = By.cssSelector("#blockcart-modal a.btn.btn-primary");
 
     public CategoryPage(WebDriver driver) {
         super(driver);
@@ -29,10 +34,16 @@ public class CategoryPage extends BasePage {
     }
 
     public void addFirstProductWithQuantity(int quantity) {
-        WebElement product = waitForVisible(firstProductContainer);
-        product.findElement(quantityInput).clear();
-        product.findElement(quantityInput).sendKeys(String.valueOf(quantity));
-        product.findElement(firstProductAddButton).click();
+        // Abrir ficha del primer producto
+        WebElement productLink = waitForClickable(firstProductLink);
+        productLink.click();
+
+        // En ficha de producto, setear cantidad y agregar al carrito
+        WebElement qty = waitForVisible(quantityInput);
+        qty.clear();
+        qty.sendKeys(String.valueOf(quantity));
+
+        click(addToCartButton);
     }
 
     public boolean isPopupVisible() {
