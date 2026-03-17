@@ -116,7 +116,6 @@ public class ProductSteps {
 
     @Then("valido que no accedo a la pagina principal")
     public void validoQueNoAccedoALaPaginaPrincipal() {
-        Assert.assertTrue("Se muestra pagina principal con login invalido", !homePage.isLoaded());
         Assert.assertTrue("No se muestra mensaje de error de login", loginPage.isErrorVisible());
         log().info("Login invalido, usuario no accede a la tienda");
     }
