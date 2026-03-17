@@ -1,0 +1,130 @@
+package steps;
+
+import com.aventstack.extentreports.ExtentTest;
+import io.cucumber.java.en.And;
+import io.cucumber.java.en.Given;
+import io.cucumber.java.en.Then;
+import io.cucumber.java.en.When;
+import org.junit.Assert;
+import org.openqa.selenium.WebDriver;
+import pages.CartPage;
+import pages.CategoryPage;
+import pages.HomePage;
+import pages.LoginPage;
+import support.DriverManager;
+import support.ExtentManager;
+
+public class ProductSteps {
+
+    private static final String BASE_URL = "https://qalab.bensg.com/store";
+
+    private WebDriver driver;
+    private LoginPage loginPage;
+    private HomePage homePage;
+    private CategoryPage categoryPage;
+    private CartPage cartPage;
+
+    private double unitPrice;
+    private double expectedTotal;
+
+    private ExtentTest log() {
+        return ExtentManager.getCurrentTest();
+    }
+
+    @Given("estoy en la pagina de la tienda")
+    public void estoyEnLaPaginaDeLaTienda() {
+        driver = DriverManager.getDriver();
+        loginPage = new LoginPage(driver);
+        homePage = new HomePage(driver);
+        categoryPage = new CategoryPage(driver);
+        cartPage = new CartPage(driver);
+        loginPage.open(BASE_URL);
+        log().info("Ingreso a la tienda " + BASE_URL);
+    }
+
+    @And("me logueo con mi usuario {string} y clave {string}")
+    public void meLogueoConMiUsuarioYClave(String user, String pass) {
+        String realUser = user;
+        String realPass = pass;
+
+        if ("USUARIO_VALIDO".equals(user)) {
+            realUser = System.getProperty("store.user", "CAMBIAR_USUARIO");
+            realPass = System.getProperty("store.pass", "CAMBIAR_CLAVE");
+        }
+
+        loginPage.login(realUser, realPass);
+        log().info("Intento de login con usuario: " + user);
+    }
+
+    @When("navego a la categoria {string} y subcategoria {string}")
+    public void navegoALaCategoriaYSubcategoria(String categoria, String subcategoria) {
+        if ("Autos".equalsIgnoreCase(categoria)) {
+            try {
+                homePage.goToCategory(categoria, subcategoria);
+                Assert.fail("La categoria Autos no deberia existir");
+            } catch (Exception e) {
+                log().info("Categoria inexistente: " + categoria);
+            }
+        } else {
+            homePage.goToCategory(categoria, subcategoria);
+            log().info("Ingreso a categoria: " + categoria + " / " + subcategoria);
+        }
+    }
+
+    @And("agrego {int} unidades del primer producto al carrito")
+    public void agregoUnidadesDelPrimerProductoAlCarrito(int cantidad) {
+        unitPrice = categoryPage.getFirstProductUnitPrice();
+        expectedTotal = unitPrice * cantidad;
+        categoryPage.addFirstProductWithQuantity(cantidad);
+        log().info("Agrego " + cantidad + " unidades del primer producto. Precio unitario: " + unitPrice);
+    }
+
+    @Then("valido en el popup la confirmacion del producto agregado")
+    public void validoEnElPopupLaConfirmacionDelProductoAgregado() {
+        Assert.assertTrue("Popup de confirmacion no visible", categoryPage.isPopupVisible());
+        String message = categoryPage.getPopupMessage();
+        Assert.assertTrue("Mensaje de popup inesperado", message.toLowerCase().contains("agregado"));
+        log().info("Popup visible con mensaje: " + message);
+    }
+
+    @And("valido en el popup que el monto total sea calculado correctamente")
+    public void validoEnElPopupQueElMontoTotalSeaCalculadoCorrectamente() {
+        double popupTotal = categoryPage.getPopupTotal();
+        Assert.assertEquals("Total en popup incorrecto", expectedTotal, popupTotal, 0.01);
+        log().info("Total en popup: " + popupTotal + " esperado: " + expectedTotal);
+    }
+
+    @When("finalizo la compra")
+    public void finalizoLaCompra() {
+        categoryPage.goToCheckoutFromPopup();
+        log().info("Voy al carrito desde el popup");
+    }
+
+    @Then("valido el titulo de la pagina del carrito")
+    public void validoElTituloDeLaPaginaDelCarrito() {
+        String title = cartPage.getTitle();
+        Assert.assertTrue("Titulo del carrito inesperado: " + title, title.toLowerCase().contains("cart"));
+        log().info("Titulo de carrito: " + title);
+    }
+
+    @And("vuelvo a validar el calculo de precios en el carrito")
+    public void vuelvoAValidarElCalculoDePreciosEnElCarrito() {
+        double cartTotal = cartPage.getCartTotal();
+        Assert.assertEquals("Total en carrito incorrecto", expectedTotal, cartTotal, 0.01);
+        log().info("Total en carrito: " + cartTotal + " esperado: " + expectedTotal);
+    }
+
+    @Then("valido que no accedo a la pagina principal")
+    public void validoQueNoAccedoALaPaginaPrincipal() {
+        Assert.assertTrue("Se muestra pagina principal con login invalido", !homePage.isLoaded());
+        Assert.assertTrue("No se muestra mensaje de error de login", loginPage.isErrorVisible());
+        log().info("Login invalido, usuario no accede a la tienda");
+    }
+
+    @Then("valido que la categoria no existe y no continuo el flujo")
+    public void validoQueLaCategoriaNoExisteYNoContinuoElFlujo() {
+        Assert.assertFalse("Se encontro categoria inexistente", homePage.isLoaded());
+        log().info("Flujo detenido por categoria inexistente");
+    }
+}
+
