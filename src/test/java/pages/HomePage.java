@@ -5,7 +5,7 @@ import org.openqa.selenium.WebDriver;
 
 public class HomePage extends BasePage {
 
-    private final By mainContainer = By.id("main-container");
+    private final By mainContainer = By.linkText("Clothes");
 
     public HomePage(WebDriver driver) {
         super(driver);

@@ -5,9 +5,9 @@ import org.openqa.selenium.WebDriver;
 
 public class LoginPage extends BasePage {
 
-    private final By usernameInput = By.id("user");
-    private final By passwordInput = By.id("pass");
-    private final By loginButton = By.id("btnLogin");
+    private final By usernameInput = By.name("email");
+    private final By passwordInput = By.name("password");
+    private final By loginButton = By.cssSelector("button[type='submit']");
     private final By loginError = By.cssSelector(".alert.alert-danger");
 
     public LoginPage(WebDriver driver) {

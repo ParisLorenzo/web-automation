@@ -38,8 +38,8 @@ public class ProductSteps {
         homePage = new HomePage(driver);
         categoryPage = new CategoryPage(driver);
         cartPage = new CartPage(driver);
-        loginPage.open(BASE_URL);
-        log().info("Ingreso a la tienda " + BASE_URL);
+        loginPage.open(BASE_URL + "/en/login");
+        log().info("Ingreso a la pagina de login de la tienda " + BASE_URL + "/en/login");
     }
 
     @And("me logueo con mi usuario {string} y clave {string}")
