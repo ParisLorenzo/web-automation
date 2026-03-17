@@ -16,7 +16,7 @@ public class CategoryPage extends BasePage {
 
     // Popup de carrito
     private final By popup = By.id("blockcart-modal");
-    private final By popupMessage = By.cssSelector("#blockcart-modal .modal-body h4");
+    private final By popupMessage = By.cssSelector("#blockcart-modal .modal-body");
     private final By popupTotal = By.cssSelector("#blockcart-modal .cart-content .value, #blockcart-modal .cart-content span.value");
     private final By popupCheckoutButton = By.cssSelector("#blockcart-modal a.btn.btn-primary");
 
