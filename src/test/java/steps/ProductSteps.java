@@ -6,7 +6,9 @@ import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import org.junit.Assert;
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 import pages.CartPage;
 import pages.CategoryPage;
 import pages.HomePage;
@@ -74,6 +76,13 @@ public class ProductSteps {
         }
     }
 
+    @When("navego a la categoria {string}")
+    public void navegoSoloALaCategoria(String categoria) {
+        String urlCategoriaInexistente = BASE_URL + "/en/" + categoria.toLowerCase();
+        driver.get(urlCategoriaInexistente);
+        log().info("Navego a categoria inexistente: " + urlCategoriaInexistente);
+    }
+
     @And("agrego {int} unidades del primer producto al carrito")
     public void agregoUnidadesDelPrimerProductoAlCarrito(int cantidad) {
         unitPrice = categoryPage.getFirstProductUnitPrice();
@@ -128,8 +137,13 @@ public class ProductSteps {
 
     @Then("valido que la categoria no existe y no continuo el flujo")
     public void validoQueLaCategoriaNoExisteYNoContinuoElFlujo() {
-        Assert.assertTrue("Se encontro categoria inexistente", categoriaInexistente);
-        log().info("Flujo detenido por categoria inexistente");
+        WebElement h1 = driver.findElement(By.cssSelector("section.page-content.page-not-found h1"));
+        WebElement h4 = driver.findElement(By.cssSelector("section.page-content.page-not-found h4"));
+        Assert.assertTrue("No se muestra titulo de pagina no encontrada",
+                h1.getText().contains("The page you are looking for was not found"));
+        Assert.assertTrue("No se muestra mensaje de productos no disponibles",
+                h4.getText().contains("No products available yet"));
+        log().info("Se valida pagina de categoria inexistente sin continuar el flujo");
     }
 }
 

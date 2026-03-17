@@ -19,6 +19,6 @@ Feature: Product - Store
 
   Scenario: Categoria inexistente no permite continuar
     And me logueo con mi usuario "USUARIO_VALIDO" y clave "CLAVE_VALIDA"
-    When navego a la categoria "Autos" y subcategoria "Men"
+    When navego a la categoria "Autos"
     Then valido que la categoria no existe y no continuo el flujo
 
