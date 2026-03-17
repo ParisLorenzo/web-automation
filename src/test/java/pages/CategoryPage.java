@@ -20,7 +20,11 @@ public class CategoryPage extends BasePage {
     }
 
     public double getFirstProductUnitPrice() {
-        String priceText = getText(firstProductPrice).replace("$", "").trim();
+        String priceText = getText(firstProductPrice);
+        priceText = priceText.replace("PEN", "")
+                .replace("$", "")
+                .replaceAll("[^0-9.,]", "")
+                .trim();
         return Double.parseDouble(priceText);
     }
 
@@ -44,7 +48,11 @@ public class CategoryPage extends BasePage {
     }
 
     public double getPopupTotal() {
-        String totalText = getText(popupTotal).replace("$", "").trim();
+        String totalText = getText(popupTotal);
+        totalText = totalText.replace("PEN", "")
+                .replace("$", "")
+                .replaceAll("[^0-9.,]", "")
+                .trim();
         return Double.parseDouble(totalText);
     }
 

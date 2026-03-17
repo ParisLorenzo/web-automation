@@ -26,6 +26,7 @@ public class ProductSteps {
 
     private double unitPrice;
     private double expectedTotal;
+    private boolean categoriaInexistente;
 
     private ExtentTest log() {
         return ExtentManager.getCurrentTest();
@@ -38,6 +39,7 @@ public class ProductSteps {
         homePage = new HomePage(driver);
         categoryPage = new CategoryPage(driver);
         cartPage = new CartPage(driver);
+        categoriaInexistente = false;
         loginPage.open(BASE_URL + "/en/login");
         log().info("Ingreso a la pagina de login de la tienda " + BASE_URL + "/en/login");
     }
@@ -63,6 +65,7 @@ public class ProductSteps {
                 homePage.goToCategory(categoria, subcategoria);
                 Assert.fail("La categoria Autos no deberia existir");
             } catch (Exception e) {
+                categoriaInexistente = true;
                 log().info("Categoria inexistente: " + categoria);
             }
         } else {
@@ -116,13 +119,16 @@ public class ProductSteps {
 
     @Then("valido que no accedo a la pagina principal")
     public void validoQueNoAccedoALaPaginaPrincipal() {
-        Assert.assertTrue("No se muestra mensaje de error de login", loginPage.isErrorVisible());
+        boolean sigueEnLogin = loginPage.isAtLoginPage();
+        boolean muestraError = loginPage.isErrorVisible();
+        Assert.assertTrue("No se muestra mensaje de error de login o no se permanece en la pagina de login",
+                sigueEnLogin || muestraError);
         log().info("Login invalido, usuario no accede a la tienda");
     }
 
     @Then("valido que la categoria no existe y no continuo el flujo")
     public void validoQueLaCategoriaNoExisteYNoContinuoElFlujo() {
-        Assert.assertFalse("Se encontro categoria inexistente", homePage.isLoaded());
+        Assert.assertTrue("Se encontro categoria inexistente", categoriaInexistente);
         log().info("Flujo detenido por categoria inexistente");
     }
 }

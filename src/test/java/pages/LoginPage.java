@@ -24,6 +24,10 @@ public class LoginPage extends BasePage {
         click(loginButton);
     }
 
+    public boolean isAtLoginPage() {
+        return driver.getCurrentUrl().contains("/login");
+    }
+
     public boolean isErrorVisible() {
         try {
             return !getText(loginError).isEmpty();
