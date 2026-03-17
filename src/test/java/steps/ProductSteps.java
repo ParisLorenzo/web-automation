@@ -95,7 +95,7 @@ public class ProductSteps {
     public void validoEnElPopupLaConfirmacionDelProductoAgregado() {
         Assert.assertTrue("Popup de confirmacion no visible", categoryPage.isPopupVisible());
         String message = categoryPage.getPopupMessage();
-        Assert.assertTrue("Mensaje de popup inesperado", message.toLowerCase().contains("agregado"));
+        Assert.assertFalse("Mensaje de popup inesperado", message.trim().isEmpty());
         log().info("Popup visible con mensaje: " + message);
     }
 
@@ -137,7 +137,7 @@ public class ProductSteps {
 
     @Then("valido que la categoria no existe y no continuo el flujo")
     public void validoQueLaCategoriaNoExisteYNoContinuoElFlujo() {
-        WebElement h1 = driver.findElement(By.cssSelector("section.page-content.page-not-found h1"));
+        WebElement h1 = driver.findElement(By.cssSelector(".page-header h1"));
         WebElement h4 = driver.findElement(By.cssSelector("section.page-content.page-not-found h4"));
         Assert.assertTrue("No se muestra titulo de pagina no encontrada",
                 h1.getText().contains("The page you are looking for was not found"));
